@@ -6,22 +6,22 @@ import java.util.List;
 public class Driver {
     public static void main(String[] args) {
 //        // 输入参数 (为符合程序定义，编号均修改为从零开始)
-//        int[][] dependencyList = {{3, 4}, {3, 4}, {4}, {}, {}};
-//        int[] runningTime = {1, 1, 2, 1, 1};
-//        int[] releaseTime = {0, 3, 0, 0, 0};
-//        PriorTable priorTable = new PriorTable(releaseTime, runningTime, dependencyList);
-//        TaskExecutor taskExecutor = new TaskExecutor(priorTable, 2);
-//        while (taskExecutor.clk()) ;
-//        taskExecutor.printLog();
-
-        // 输入参数 (为符合程序定义，编号均修改为从零开始)
-        int[][] dependencyList = {{3}, {3, 4}, {4}, {5, 6}, {7, 8}, {9}, {9}, {10}, {10}, {}, {}};
-        int[] runningTime = {1, 2, 1, 4, 1, 3, 1, 1, 2, 2, 2};
-        int[] releaseTime = {0, 0, 0, 4, 0, 0, 0, 6, 0, 0, 0};
+        int[][] dependencyList = {{3, 4}, {3, 4}, {4}, {}, {}};
+        int[] runningTime = {1, 1, 2, 1, 1};
+        int[] releaseTime = {0, 3, 0, 0, 0};
         PriorTable priorTable = new PriorTable(releaseTime, runningTime, dependencyList);
-        TaskExecutor taskExecutor = new TaskExecutor(priorTable, 3);
+        TaskExecutor taskExecutor = new TaskExecutor(priorTable, 2);
         while (taskExecutor.clk()) ;
         taskExecutor.printLog();
+
+//        // 输入参数 (为符合程序定义，编号均修改为从零开始)
+//        int[][] dependencyList = {{3}, {3, 4}, {4}, {5, 6}, {7, 8}, {9}, {9}, {10}, {10}, {}, {}};
+//        int[] runningTime = {1, 2, 1, 4, 1, 3, 1, 1, 2, 2, 2};
+//        int[] releaseTime = {0, 0, 0, 4, 0, 0, 0, 6, 0, 0, 0};
+//        PriorTable priorTable = new PriorTable(releaseTime, runningTime, dependencyList);
+//        TaskExecutor taskExecutor = new TaskExecutor(priorTable, 3);
+//        while (taskExecutor.clk()) ;
+//        taskExecutor.printLog();
     }
 
     // 任务执行器
@@ -85,9 +85,9 @@ public class Driver {
 
         // 打印调度结果图和日志
         public void printLog() {
-            System.out.println();
             // 图形输出
             for (int i = 0; i < logger.length; i++) {
+                System.out.println();
                 int currentTime = 0;
                 System.out.printf("P%d: |", i);
                 while (!logger[i].isEmpty()) {

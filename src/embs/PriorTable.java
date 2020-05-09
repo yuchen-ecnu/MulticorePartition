@@ -63,7 +63,7 @@ public class PriorTable {
     private int getMaxSuccessorPri(Task task) {
         int maxSuccessorPri = 0;
         for (Task t : task.successors) {
-            Math.max(maxSuccessorPri, getMaxSuccessorPri(t));
+            maxSuccessorPri = Math.max(maxSuccessorPri, t.runningTime + t.successors.size() + getMaxSuccessorPri(t));
         }
         return maxSuccessorPri;
     }
