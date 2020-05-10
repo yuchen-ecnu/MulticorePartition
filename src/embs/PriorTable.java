@@ -52,6 +52,15 @@ public class PriorTable {
         }
     }
 
+    // 打印优先级值表
+    public void printPriorityTable() {
+        for (Task task : priorityTable) {
+            System.out.printf("J%d(%d), ", task.id + 1, task.priority);
+        }
+        System.out.println();
+        System.out.println("------------------------------------");
+    }
+
     // 计算优先级值 Pri(Ji)= pi+O(Ji)+MaxJk∈Suc(Ji)Pri(Jk)
     private void calculatePriorityValues(Task[] tasks) {
         for (Task task : tasks) {
