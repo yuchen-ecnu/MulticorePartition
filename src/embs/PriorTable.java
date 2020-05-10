@@ -69,10 +69,11 @@ public class PriorTable {
     }
 
     // 获取下一个可以执行的 Task
-    public Task getNext() {
+    public Task getNext(int currentTime) {
         for (int i = 0; i < priorityTable.size(); i++) {
             Task candidateTask = priorityTable.get(i);
-
+            // 当前时间未达到释放要求
+            if (candidateTask.releasedTime > currentTime) continue;
             // 检查Task的前驱是否均已完成
             boolean isValid = true;
             Deque<Task> queue = new ArrayDeque<>();
@@ -85,6 +86,7 @@ public class PriorTable {
             // 若合法则返回该任务
             if (isValid) return priorityTable.remove(i);
         }
+        System.out.printf("Time %d: No more appropriate task at this time.\n", currentTime);
         return null;
     }
 

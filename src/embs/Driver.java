@@ -59,15 +59,28 @@ public class Driver {
             }
             // 寻找空处理器并添加新的任务;
             for (int i = 0; i < processors.length; i++) {
-                if (processors[i] != null) continue;
-                Task nextTask = priorTable.getNext();
+                if (processors[i] != null) {
+                    System.out.printf("Time %d: Processor %d Continue Running Task %d.\n", currentTime, i, processors[i].id);
+                    continue;
+                }
+                Task nextTask = priorTable.getNext(currentTime);
                 // 若当前不存在可以执行的任务，则停止部署任务
-                if (nextTask == null) break;
+                if (nextTask == null) {
+                    for (int j = i; j < processors.length; j++) {
+                        if (processors[j] != null) {
+                            System.out.printf("Time %d: Processor %d Continue Running Task %d.\n", currentTime, j, processors[j].id);
+                            continue;
+                        }
+                        System.out.printf("Time %d: Processor %d Free.\n", currentTime, j);
+                    }
+                    break;
+                }
                 processors[i] = nextTask;
                 System.out.printf("Time %d: Task %d Deployed in P%d.\n", currentTime, processors[i].id, i);
                 Info info = new Info(nextTask.id, currentTime, i);
                 logger[i].add(info);
             }
+            System.out.println("---------------------------------------");
             currentTime += 1;
             return !isFinished();
         }
