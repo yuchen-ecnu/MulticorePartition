@@ -5,9 +5,11 @@ import java.util.*;
 public class PriorTable {
     private List<Task> priorityTable = new ArrayList<>();
     private int[] taskFinishTime;
+    private PriorityType priorityType;
 
     // 创建任务优先级表
-    public PriorTable(int[] releaseTimeTable, int[] runningTime, int[][] dependencyList) {
+    public PriorTable(int[] releaseTimeTable, int[] runningTime, int[][] dependencyList, PriorityType priorityType) {
+        this.priorityType = priorityType;
         // 初始化任务List；
         Task[] tasks = new Task[releaseTimeTable.length];
         for (int i = 0; i < releaseTimeTable.length; i++) {
@@ -24,6 +26,16 @@ public class PriorTable {
 
         // 存储到priorityTable中,并根据算法要求生成 “任务优先级表”
         Collections.addAll(priorityTable, tasks);
+        generatePriorityTableOrder();
+        // 初始化任务完成时间为-1
+        this.taskFinishTime = new int[releaseTimeTable.length];
+        for (int i = 0; i < releaseTimeTable.length; i++) {
+            taskFinishTime[i] = -1;
+        }
+    }
+
+    // 按照规则对任务进行排序
+    private void generatePriorityTableOrder() {
         priorityTable.sort((o1, o2) -> {
             // 1 若Priority不相等则，按照Priority从大到小排序
             if (o1.priority != o2.priority) {
@@ -45,26 +57,22 @@ public class PriorTable {
             // 5 如上述条件都相等，则按照ID从小到大进行排序
             return o1.id - o2.id;
         });
-        // 初始化任务完成时间为-1
-        this.taskFinishTime = new int[releaseTimeTable.length];
-        for (int i = 0; i < releaseTimeTable.length; i++) {
-            taskFinishTime[i] = -1;
-        }
     }
 
-    // 打印优先级值表
+    // 打印优先级表（优先级值在括号中）
     public void printPriorityTable() {
+        System.out.println("Print task priority table (priority values are in parentheses):");
         for (Task task : priorityTable) {
-            System.out.printf("J%d(%d), ", task.id + 1, task.priority);
+            System.out.printf("J%d(%d) > ", task.id + 1, task.priority);
         }
         System.out.println();
         System.out.println("------------------------------------");
     }
 
-    // 计算优先级值 Pri(Ji)= pi+O(Ji)+MaxJk∈Suc(Ji)Pri(Jk)
+    // 计算优先级值 Pri(Ji)= pi+O(Ji)+MaxJk∈Suc(Ji)Pri(Jk) or Pri(Ji)= pi+I(Ji)+MaxJk∈Suc(Ji)Pri(Jk)
     private void calculatePriorityValues(Task[] tasks) {
         for (Task task : tasks) {
-            task.priority = task.runningTime + task.successors.size() + getMaxSuccessorPri(task);
+            task.priority = task.runningTime + (priorityType == PriorityType.OUT_DEGREE ? task.successors.size() : -task.predecessor.size()) + getMaxSuccessorPri(task);
         }
     }
 
@@ -72,7 +80,7 @@ public class PriorTable {
     private int getMaxSuccessorPri(Task task) {
         int maxSuccessorPri = 0;
         for (Task t : task.successors) {
-            maxSuccessorPri = Math.max(maxSuccessorPri, t.runningTime + t.successors.size() + getMaxSuccessorPri(t));
+            maxSuccessorPri = Math.max(maxSuccessorPri, t.runningTime + (priorityType == PriorityType.OUT_DEGREE ? task.successors.size() : -task.predecessor.size()) + getMaxSuccessorPri(t));
         }
         return maxSuccessorPri;
     }
@@ -93,10 +101,21 @@ public class PriorTable {
                 break;
             }
             // 若合法则返回该任务
-            if (isValid) return priorityTable.remove(i);
+            if (isValid) return priorityTable.get(i);
         }
         System.out.printf("Time %d: No more appropriate task at this time.\n", currentTime);
         return null;
+    }
+
+    public Task deployTask(Task t) {
+        priorityTable.remove(t);
+        return t;
+    }
+
+    // 暂存任务，适用于任务被抢占后放回待执行队列
+    public void stashTask(Task t) {
+        priorityTable.add(t);
+        generatePriorityTableOrder();
     }
 
     // 检查任务队列中是否还存在有未执行的任务
@@ -109,5 +128,10 @@ public class PriorTable {
 
     public void finishTask(Task task, int currentTime) {
         taskFinishTime[task.id] = currentTime;
+    }
+
+    enum PriorityType {
+        IN_DEGREE,
+        OUT_DEGREE
     }
 }
